@@ -1,7 +1,8 @@
 pub mod wsjtxmessages;
 use std::net::UdpSocket;
 // use std::str;
-use wsjtxmessages::*;
+pub use wsjtxmessages::*;
+pub use wsjtxmessages::receivemessages::*;
 
 const debug: bool = false;
 
