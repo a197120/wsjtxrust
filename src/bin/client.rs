@@ -5,4 +5,4 @@ fn main() {
     socket.connect("127.0.0.1:2237").expect("Could not connect to server");
 
     socket.send(b"Hello, server!").expect("Failed to write to server");
-}
+} 
