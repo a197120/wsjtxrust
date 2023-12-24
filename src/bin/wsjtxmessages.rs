@@ -1,21 +1,23 @@
 pub mod receivemessages;
 pub mod sendmessages;
-use serde_derive::{Serialize, Deserialize};
-use derive_more::{Display};
 use chrono::{DateTime, TimeZone, NaiveTime};
 use chrono::offset::Utc;
-use receivemessages::*;
-use sendmessages::*;
+// use receivemessages::*;
+// use sendmessages::*;
+use byteorder::{ByteOrder, BigEndian};
+use serde_derive::Serialize;
 
-#[derive(Serialize, Deserialize, Debug)]
+
+#[derive(Debug, Serialize)]
 pub struct Message {
     pub magic_number: u32,
     pub schema_number: u32,
     pub payload: Vec<u8>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
 pub struct Heartbeat {
+    message_type: u32,
     id: String,
     maximum_schema_number: u32,
     version: String,
@@ -29,8 +31,9 @@ impl std::fmt::Display for Heartbeat {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
 pub struct Status {
+    message_type: u32,
     id: String,
     dial_frequency: u64,
     mode: String,
@@ -64,6 +67,7 @@ impl std::fmt::Display for Status{
 // #[derive(Serialize, Deserialize, Debug, Display)]
 #[derive(Debug)]
 pub struct Decode {
+    message_type: u32,
     id: String,
     new: bool,
     time: NaiveTime,
@@ -83,8 +87,9 @@ impl std::fmt::Display for Decode{
 }
 #[derive(Debug)]
 pub struct Clear {
-    id: String,
-    window: u8,
+    pub message_type: u32,
+    pub id: String,
+    pub window: u8,
 }
 impl std::fmt::Display for Clear{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -95,6 +100,7 @@ impl std::fmt::Display for Clear{
 
 #[derive(Debug)]
 pub struct Reply {
+    message_type: u32,
     id: String,
     time: NaiveTime,
     snr: i32,
@@ -114,6 +120,7 @@ impl std::fmt::Display for Reply{
 
 #[derive(Debug)]
 pub struct LogData {
+    message_type: u32,
     id: String,
     date_time_off: DateTime<Utc>,
     dx_call: String,
@@ -139,9 +146,10 @@ impl std::fmt::Display for LogData{
         , self.id, self.date_time_off, self.dx_call, self.dx_grid, self.tx_frequency_hz, self.mode, self.report_sent, self.report_received, self.tx_power, self.comments, self.name, self.date_time_on, self.operator_call, self.my_call, self.my_grid, self.exchange_sent, self.exchange_received, self.adif_propagation_mode)
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Close{
-    id: String,
+    pub message_type: u32,
+    pub id: String,
 }
 impl std::fmt::Display for Close{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -151,6 +159,7 @@ impl std::fmt::Display for Close{
 }
 #[derive(Debug)]
 pub struct Replay {
+    message_type: u32,
     id: String,
 }
 impl std::fmt::Display for Replay{
@@ -161,6 +170,7 @@ impl std::fmt::Display for Replay{
 }
 #[derive(Debug)]
 pub struct HaltTx {
+    message_type: u32,
     id: String,
     auto_tx_only: bool,
 }
@@ -172,9 +182,10 @@ impl std::fmt::Display for HaltTx{
 }
 #[derive(Debug)]
 pub struct FreeText {
-    id: String,
-    text: String,
-    send: bool,
+    pub message_type: u32,
+    pub id: String,
+    pub text: String,
+    pub send: bool,
 }
 impl std::fmt::Display for FreeText{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -185,6 +196,7 @@ impl std::fmt::Display for FreeText{
 
 #[derive(Debug)]
 pub struct WSPRDecode {
+    message_type: u32,
     id: String,
     new: bool,
     time: NaiveTime,
@@ -205,6 +217,7 @@ impl std::fmt::Display for WSPRDecode{
 }
 #[derive(Debug)]
 pub struct Location {
+    message_type: u32,
     id: String,
     location: String,
 }
@@ -216,6 +229,7 @@ impl std::fmt::Display for Location{
 }
 #[derive(Debug)]
 pub struct LoggedADIF {
+    message_type: u32,
     id: String,
     adif: String,
 }
@@ -227,6 +241,7 @@ impl std::fmt::Display for LoggedADIF{
 }
 #[derive(Debug)]
 pub struct HighlightCallsignIn {
+    message_type: u32,
     id: String,
     callsign: String,
     background_color: String,  // are QCOLOR
@@ -241,6 +256,7 @@ impl std::fmt::Display for HighlightCallsignIn{
 }
 #[derive(Debug)]
 pub struct SwitchConfiguration {
+    message_type: u32,
     id: String,
     configuration_name: String,
 }
@@ -252,6 +268,7 @@ impl std::fmt::Display for SwitchConfiguration{
 }
 #[derive(Debug)]
 pub struct Configure {
+    message_type: u32,
     id: String,
     mode: String,
     frequency_tolerance: u32,
