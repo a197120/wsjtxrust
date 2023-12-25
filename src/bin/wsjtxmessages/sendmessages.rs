@@ -1,7 +1,7 @@
 use bincode;
 use super::*;
 
-pub fn add_string_to_payload(payload: &mut Vec<u8>, string: String) {
+pub fn add_string_to_payload(payload: &mut Vec<u8>, string: &str) {
     let len = string.len() as u32;
     let mut len_bytes = [0u8; 4];
     BigEndian::write_u32(&mut len_bytes, len);
@@ -65,16 +65,16 @@ pub fn encode_heartbeat(heartbeat: &Heartbeat) -> Vec<u8> {
     add_u32_to_payload(&mut payload, heartbeat.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, heartbeat.id.clone());
+    add_string_to_payload(&mut payload, &heartbeat.id);
 
     // Add maximum_schema_number to payload
     add_u32_to_payload(&mut payload, heartbeat.maximum_schema_number);
 
     // Add version to payload
-    add_string_to_payload(&mut payload, heartbeat.version.clone());
+    add_string_to_payload(&mut payload, &heartbeat.version);
 
     // Add revision to payload
-    add_string_to_payload(&mut payload, heartbeat.revision.clone());
+    add_string_to_payload(&mut payload, &heartbeat.revision);
     payload
 }
 
@@ -85,7 +85,7 @@ pub fn encode_clear(clear: &Clear) -> Vec<u8> {
     add_u32_to_payload(&mut payload, clear.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, clear.id.clone());
+    add_string_to_payload(&mut payload, &clear.id);
 
     //add window to the payload
     add_u8_to_payload(&mut payload, clear.window);
@@ -99,7 +99,7 @@ pub fn encode_reply(reply: &Reply) -> Vec<u8> {
     add_u32_to_payload(&mut payload, reply.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, reply.id.clone());
+    add_string_to_payload(&mut payload, &reply.id);
 
     // add QTime to payload
     add_naive_time_to_payload(&mut payload, reply.time);
@@ -114,10 +114,10 @@ pub fn encode_reply(reply: &Reply) -> Vec<u8> {
     add_u32_to_payload(&mut payload, reply.delta_frequency_hz);
 
     //add mode to payload
-    add_string_to_payload(&mut payload, reply.mode.clone());
+    add_string_to_payload(&mut payload, &reply.mode);
 
     //add message to payload
-    add_string_to_payload(&mut payload, reply.message.clone());
+    add_string_to_payload(&mut payload, &reply.message);
 
     //add low_confidence to payload
     add_bool_to_payload(&mut payload, reply.low_confidence);
@@ -136,7 +136,7 @@ pub fn encode_close(close: &Close) -> Vec<u8> {
     add_u32_to_payload(&mut payload, close.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, close.id.clone());
+    add_string_to_payload(&mut payload, &close.id);
 
     payload
 }
@@ -148,7 +148,7 @@ pub fn encode_replay(replay: &Replay) -> Vec<u8> {
     add_u32_to_payload(&mut payload, replay.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, replay.id.clone());
+    add_string_to_payload(&mut payload, &replay.id);
     payload
 }
 
@@ -159,7 +159,7 @@ pub fn encode_halt_tx(halt_tx: &HaltTx) -> Vec<u8> {
     add_u32_to_payload(&mut payload, halt_tx.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, halt_tx.id.clone());
+    add_string_to_payload(&mut payload, &halt_tx.id);
 
     //add auto_tx_only to payload
     add_bool_to_payload(&mut payload, halt_tx.auto_tx_only);
@@ -174,10 +174,10 @@ pub fn encode_free_text(free_text: &FreeText) -> Vec<u8> {
     add_u32_to_payload(&mut payload, free_text.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, free_text.id.clone());
+    add_string_to_payload(&mut payload, &free_text.id);
 
     // Add text to payload
-    add_string_to_payload(&mut payload, free_text.text.clone());
+    add_string_to_payload(&mut payload, &free_text.text);
 
     // Add send to payload
     add_bool_to_payload(&mut payload, free_text.send);
@@ -192,10 +192,10 @@ pub fn encode_location(location: &Location) -> Vec<u8> {
     add_u32_to_payload(&mut payload, location.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, location.id.clone());
+    add_string_to_payload(&mut payload, &location.id);
 
     // Add location to payload
-    add_string_to_payload(&mut payload, location.location.clone());
+    add_string_to_payload(&mut payload, &location.location);
     payload
 }
 
@@ -206,16 +206,16 @@ pub fn encode_highlight_callsign_in(highlight_callsign_in: &HighlightCallsignIn)
     add_u32_to_payload(&mut payload, highlight_callsign_in.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, highlight_callsign_in.id.clone());
+    add_string_to_payload(&mut payload, &highlight_callsign_in.id);
 
     // Add callsign to payload
-    add_string_to_payload(&mut payload, highlight_callsign_in.callsign.clone());
+    add_string_to_payload(&mut payload, &highlight_callsign_in.callsign);
 
     // Add background color to payload
-    add_string_to_payload(&mut payload, highlight_callsign_in.background_color.clone());
+    add_string_to_payload(&mut payload, &highlight_callsign_in.background_color);
 
     // Add foreground color to payloud 
-    add_string_to_payload(&mut payload, highlight_callsign_in.foreground_color.clone());
+    add_string_to_payload(&mut payload, &highlight_callsign_in.foreground_color);
 
     // Add highlight last to payload
     add_bool_to_payload(&mut payload, highlight_callsign_in.highlight_last);
@@ -230,10 +230,10 @@ pub fn encode_switch_configuration(switch_configuration: &SwitchConfiguration) -
     add_u32_to_payload(&mut payload, switch_configuration.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, switch_configuration.id.clone());
+    add_string_to_payload(&mut payload, &switch_configuration.id);
 
     // Add configuration_name to payload
-    add_string_to_payload(&mut payload, switch_configuration.configuration_name.clone());
+    add_string_to_payload(&mut payload, &switch_configuration.configuration_name);
     payload
 }
 
@@ -244,16 +244,16 @@ pub fn encode_configure(configure: &Configure) -> Vec<u8> {
     add_u32_to_payload(&mut payload, configure.message_type);
 
     // Add id to payload
-    add_string_to_payload(&mut payload, configure.id.clone());
+    add_string_to_payload(&mut payload, &configure.id);
 
     // Add mode to payload
-    add_string_to_payload(&mut payload, configure.mode.clone());
+    add_string_to_payload(&mut payload, &configure.mode);
 
     // Add frequency_tolerance to payload
     add_u32_to_payload(&mut payload, configure.frequency_tolerance);
 
     // Add submode to payload
-    add_string_to_payload(&mut payload, configure.submode.clone());
+    add_string_to_payload(&mut payload, &configure.submode);
 
     // add fast_mode to payload
     add_bool_to_payload(&mut payload, configure.fast_mode);
@@ -265,10 +265,10 @@ pub fn encode_configure(configure: &Configure) -> Vec<u8> {
     add_i32_to_payload(&mut payload, configure.rx_df);
 
     // add dx call to payload
-    add_string_to_payload(&mut payload, configure.dx_call.clone());
+    add_string_to_payload(&mut payload, &configure.dx_call);
 
     // add dx grid to payload  
-    add_string_to_payload(&mut payload, configure.dx_grid.clone());
+    add_string_to_payload(&mut payload, &configure.dx_grid);
 
     // add generate messages to pay load
     add_bool_to_payload(&mut payload, configure.generate_messages);

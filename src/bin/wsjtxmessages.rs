@@ -26,7 +26,7 @@ pub struct Heartbeat {
 
 impl std::fmt::Display for Heartbeat {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Maximum schema number: {}, Version: {}, Revision: {}",
+        write!(f, "Message Type: {}, Id: {}, Maximum schema number: {}, Version: {}, Revision: {}", self.message_type,
             self.id, self.maximum_schema_number, self.version, self.revision)
     }
 }
@@ -59,7 +59,7 @@ pub struct Status {
 }
 impl std::fmt::Display for Status{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Dial Frequency: {}, Mode: {}, dx_call: {}, report: {}, tx_mode: {}, tx_enabled: {}, transmitting: {}, decoding: {}, rx_df: {}, tx_df: {}, de_call: {}, de_grid: {}, dx_grid: {}, tx_watchdog: {}, sub_mode: {}, fast_mode: {}, special_operation_mode: {}, frequency_tolerance: {}, tr_period: {}, configuration_name: {}, tx_message: {}"
+        write!(f, "Message Type: {}, Id: {}, Dial Frequency: {}, Mode: {}, dx_call: {}, report: {}, tx_mode: {}, tx_enabled: {}, transmitting: {}, decoding: {}, rx_df: {}, tx_df: {}, de_call: {}, de_grid: {}, dx_grid: {}, tx_watchdog: {}, sub_mode: {}, fast_mode: {}, special_operation_mode: {}, frequency_tolerance: {}, tr_period: {}, configuration_name: {}, tx_message: {}", self.message_type
         , self.id, self.dial_frequency, self.mode, self.dx_call, self.report, self.tx_mode, self.tx_enabled, self.transmitting, self.decoding, self.rx_df, self.tx_df, self.de_call, self.de_grid, self.dx_grid, self.tx_watchdog, self.sub_mode, self.fast_mode, self.special_operation_mode, self.frequency_tolerance, self.tr_period, self.configuration_name, self.tx_message)
     }
 }
@@ -81,7 +81,7 @@ pub struct Decode {
 }
 impl std::fmt::Display for Decode{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, New: {}, Time: {}, SNR: {}, Delta Time: {}, Delta Frequency: {}, Mode: {}, Message: {}, Low Confidence: {}, Off Air: {}"
+        write!(f, "Message Type: {}, Id: {}, New: {}, Time: {}, SNR: {}, Delta Time: {}, Delta Frequency: {}, Mode: {}, Message: {}, Low Confidence: {}, Off Air: {}", self.message_type
         , self.id, self.new, self.time, self.snr, self.delta_time_s, self.delta_frequency_hz, self.mode, self.message, self.low_confidence, self.off_air)
     }
 }
@@ -93,7 +93,7 @@ pub struct Clear {
 }
 impl std::fmt::Display for Clear{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Window: {}"
+        write!(f, "Message Type: {}, Id: {}, Window: {}", self.message_type
         , self.id, self.window)
     }
 }
@@ -113,7 +113,7 @@ pub struct Reply {
 }
 impl std::fmt::Display for Reply{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Time: {}, SNR: {}, Delta Time: {}, Delta Frequency: {}, Mode: {}, Message: {}, Low Confidence: {}, Modifiers: {}"
+        write!(f, "Message Type: {}, Id: {}, Time: {}, SNR: {}, Delta Time: {}, Delta Frequency: {}, Mode: {}, Message: {}, Low Confidence: {}, Modifiers: {}", self.message_type
         , self.id, self.time, self.snr, self.delta_time_s, self.delta_frequency_hz, self.mode, self.message, self.low_confidence, self.modifiers)
     }
 }
@@ -142,7 +142,7 @@ pub struct LogData {
 }
 impl std::fmt::Display for LogData{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Date Time Off: {}, DX Call: {}, DX Grid: {}, TX Frequency: {}, Mode: {}, Report Sent: {}, Report Received: {}, TX Power: {}, Comments: {}, Name: {}, Date Time On: {}, Operator Call: {}, My Call: {}, My Grid: {}, Exchange Sent: {}, Exchange Received: {}, ADIF Propagation Mode: {}"
+        write!(f, "Message Type: {}, Id: {}, Date Time Off: {}, DX Call: {}, DX Grid: {}, TX Frequency: {}, Mode: {}, Report Sent: {}, Report Received: {}, TX Power: {}, Comments: {}, Name: {}, Date Time On: {}, Operator Call: {}, My Call: {}, My Grid: {}, Exchange Sent: {}, Exchange Received: {}, ADIF Propagation Mode: {}", self.message_type
         , self.id, self.date_time_off, self.dx_call, self.dx_grid, self.tx_frequency_hz, self.mode, self.report_sent, self.report_received, self.tx_power, self.comments, self.name, self.date_time_on, self.operator_call, self.my_call, self.my_grid, self.exchange_sent, self.exchange_received, self.adif_propagation_mode)
     }
 }
@@ -153,7 +153,7 @@ pub struct Close{
 }
 impl std::fmt::Display for Close{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}"
+        write!(f, "Message Type: {}, Id: {}", self.message_type
         , self.id)
     }
 }
@@ -164,7 +164,7 @@ pub struct Replay {
 }
 impl std::fmt::Display for Replay{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}"
+        write!(f, "Message Type: {}, Id: {}", self.message_type
         , self.id)
     }
 }
@@ -176,7 +176,7 @@ pub struct HaltTx {
 }
 impl std::fmt::Display for HaltTx{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Auto Tx Only: {}"
+        write!(f, "Message Type: {}, Id: {}, Auto Tx Only: {}", self.message_type
         , self.id, self.auto_tx_only)
     }
 }
@@ -189,7 +189,7 @@ pub struct FreeText {
 }
 impl std::fmt::Display for FreeText{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Text: {}, Send: {}"
+        write!(f, "Message Type: {}, Id: {}, Text: {}, Send: {}", self.message_type
         , self.id, self.text, self.send)
     }
 }
@@ -211,7 +211,7 @@ pub struct WSPRDecode {
 }
 impl std::fmt::Display for WSPRDecode{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, New: {}, Time: {}, SNR: {}, Delta Time: {}, Frequency: {}, Drift: {}, Callsign: {}, Grid: {}, Power: {}, Off Air: {}", 
+        write!(f, "Message Type: {}, Id: {}, New: {}, Time: {}, SNR: {}, Delta Time: {}, Frequency: {}, Drift: {}, Callsign: {}, Grid: {}, Power: {}, Off Air: {}", self.message_type, 
         self.id, self.new, self.time, self.snr, self.delta_time_s, self.frequency_hz, self.drift, self.callsign, self.grid, self.power_dbm, self.off_air)
     }
 }
@@ -223,7 +223,7 @@ pub struct Location {
 }
 impl std::fmt::Display for Location{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Location: {}"
+        write!(f, "Message Type: {}, Id: {}, Location: {}", self.message_type
         , self.id, self.location)
     }
 }
@@ -235,7 +235,7 @@ pub struct LoggedADIF {
 }
 impl std::fmt::Display for LoggedADIF{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, ADIF: {}"
+        write!(f, "Message Type: {}, Id: {}, ADIF: {}", self.message_type
         , self.id, self.adif)
     }
 }
@@ -250,7 +250,7 @@ pub struct HighlightCallsignIn {
 }
 impl std::fmt::Display for HighlightCallsignIn{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Callsign: {}, Background Color: {}, Foreground Color: {}, Highlight Last: {}"
+        write!(f, "Message Type: {}, Id: {}, Callsign: {}, Background Color: {}, Foreground Color: {}, Highlight Last: {}", self.message_type
         , self.id, self.callsign, self.background_color, self.foreground_color, self.highlight_last)
     }
 }
@@ -262,7 +262,7 @@ pub struct SwitchConfiguration {
 }
 impl std::fmt::Display for SwitchConfiguration{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Configuration Name: {}"
+        write!(f, "Message Type: {}, Id: {}, Configuration Name: {}", self.message_type
         , self.id, self.configuration_name)
     }
 }
@@ -282,7 +282,7 @@ pub struct Configure {
 }
 impl std::fmt::Display for Configure{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Id: {}, Mode: {}, Frequency Tolerance: {}, Submode: {}, Fast Mode: {}, TR Period: {}, RX DF: {}, DX Call: {}, DX Grid: {}, Generate Messages: {}"
+        write!(f, "Message Type: {}, Id: {}, Mode: {}, Frequency Tolerance: {}, Submode: {}, Fast Mode: {}, TR Period: {}, RX DF: {}, DX Call: {}, DX Grid: {}, Generate Messages: {}", self.message_type
         , self.id, self.mode, self.frequency_tolerance, self.submode, self.fast_mode, self.tr_period, self.rx_df, self.dx_call, self.dx_grid, self.generate_messages)
     }
 }
