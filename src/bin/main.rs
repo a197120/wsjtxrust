@@ -82,7 +82,7 @@ fn main() {
                 let free_text = FreeText {
                     message_type: 9,
                     id: "rustyserv".to_string(),
-                    text: "RUST TEST TEST".to_string(),
+                    text: "SUCCESSS!!!".to_string(),
                     send: true,
                 };
                 // let encoded_close = encode_close(&close);
