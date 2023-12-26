@@ -99,22 +99,13 @@ impl Decode {
                 let result = grid_to_longlat(&gridsquare);
                 match result {
                     Ok((lat, lon)) => {
-                        // println!("Lat: {}, Lon: {}", lat, lon);
-                        // let geocoder = ReverseGeocoder::new();
-                        // let search_result = geocoder.search((lat,lon));
-                        // let country_name = iso3166_1::alpha2(search_result.record.cc).unwrap();
-                        // println!("Search Result: {:?}", search_result.record);
-                        // println!("CQ de {} {}, Country: {}, State: {}, City: {}", parts[1], parts[2], country_name, 
-                        // search_result.record.admin1, search_result.record.name);
-                        // println!("Lat: {}, Lon: {}", lat, lon);
                         let geocoder = ReverseGeocoder::new();
                         let search_result = geocoder.search((lat,lon));
                         let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
                         // println!("Search Result: {:?}", search_result.record);
-                        println!("{}: CQ de {} {}, Country: {}, State: {}, City: {}",self.time, parts[1].green(), parts[2].green(), country.name.green(), 
+                        println!("{}: CQ de {} {}, Country: {}, State: {}, City: {}",
+                        self.time, parts[1].green(), parts[2].green(), country.name.green(), 
                         search_result.record.admin1.green(), search_result.record.name.green());
-                
-                        
                     }
                     Err(e) => {
                         println!("Error: {}", e);
