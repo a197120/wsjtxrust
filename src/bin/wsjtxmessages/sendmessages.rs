@@ -273,3 +273,10 @@ pub fn encode_configure(configure: &Configure) -> Vec<u8> {
     add_bool_to_payload(&mut payload, configure.generate_messages);
     payload
 }
+
+pub fn send_encoded_message(socket: &UdpSocket, message: Vec<u8>, address: SocketAddr) -> io::Result<()> {
+    println!("Sending message: {:?}", message);
+    println!("To address: {:?}", address);
+    socket.send_to(&message, address)?;
+    Ok(())
+}

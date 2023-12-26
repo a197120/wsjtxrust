@@ -10,7 +10,7 @@ use colored::*;
 use maidenhead::{grid_to_longlat, MHError};
 use reverse_geocoder::{ReverseGeocoder, SearchResult};
 use iso3166_1::CountryCode;
-
+use super::*;
 
 #[derive(Debug, Serialize)]
 pub struct Message {
@@ -117,17 +117,23 @@ impl Decode {
     }
 
     fn print_non_cq_message(&self) {
-        println!("{}: SNR: {} {}", self.time, self.snr.to_string().red(), self.message);
+        println!("{}: SNR: {} {}", self.time, self.format_snr(), self.message);
     }
 
     fn print_error_message(&self, e: MHError) {
         self.print_non_cq_message();
         println!("Error: {}", e);
     }
-
+    fn format_snr(&self) -> ColoredString {
+        if self.snr >= 0 {
+            format!("+{}", self.snr).green()
+        } else {
+            self.snr.to_string().red()
+        }
+    }
     fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult) {
         println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
-        self.time, self.snr.to_string().red(), parts[1].green(), parts[2].green(), country.name.green(), 
+        self.time, self.format_snr(), parts[1].green(), parts[2].green(), country.name.green(), 
         search_result.record.admin1.green(), search_result.record.name.green());
     }
 }
