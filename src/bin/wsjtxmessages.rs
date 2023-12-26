@@ -6,6 +6,10 @@ use chrono::offset::Utc;
 // use sendmessages::*;
 use byteorder::{ByteOrder, BigEndian};
 use serde_derive::Serialize;
+use colored::*;
+use maidenhead::grid_to_longlat;
+use reverse_geocoder::{ReverseGeocoder, SearchResult};
+use iso3166_1::CountryCode;
 
 
 #[derive(Debug, Serialize)]
@@ -68,7 +72,7 @@ impl std::fmt::Display for Status{
 #[derive(Debug)]
 pub struct Decode {
     message_type: u32,
-    id: String,
+    id: String, 
     new: bool,
     time: NaiveTime,
     snr: i32,
@@ -83,6 +87,43 @@ impl std::fmt::Display for Decode{
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Message Type: {}, Id: {}, New: {}, Time: {}, SNR: {}, Delta Time: {}, Delta Frequency: {}, Mode: {}, Message: {}, Low Confidence: {}, Off Air: {}", self.message_type
         , self.id, self.new, self.time, self.snr, self.delta_time_s, self.delta_frequency_hz, self.mode, self.message, self.low_confidence, self.off_air)
+    }
+}
+impl Decode {
+    pub fn print_message(&self) {
+        if self.message.starts_with("CQ") {
+            let parts: Vec<&str> = self.message.split_whitespace().collect();
+            if parts.len() >= 3 {
+                let gridsquare = parts[2];
+                // println!("{}", self.message.green());
+                let result = grid_to_longlat(&gridsquare);
+                match result {
+                    Ok((lat, lon)) => {
+                        // println!("Lat: {}, Lon: {}", lat, lon);
+                        // let geocoder = ReverseGeocoder::new();
+                        // let search_result = geocoder.search((lat,lon));
+                        // let country_name = iso3166_1::alpha2(search_result.record.cc).unwrap();
+                        // println!("Search Result: {:?}", search_result.record);
+                        // println!("CQ de {} {}, Country: {}, State: {}, City: {}", parts[1], parts[2], country_name, 
+                        // search_result.record.admin1, search_result.record.name);
+                        // println!("Lat: {}, Lon: {}", lat, lon);
+                        let geocoder = ReverseGeocoder::new();
+                        let search_result = geocoder.search((lat,lon));
+                        let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
+                        // println!("Search Result: {:?}", search_result.record);
+                        println!("{}: CQ de {} {}, Country: {}, State: {}, City: {}",self.time, parts[1].green(), parts[2].green(), country.name.green(), 
+                        search_result.record.admin1.green(), search_result.record.name.green());
+                
+                        
+                    }
+                    Err(e) => {
+                        println!("Error: {}", e);
+                    }
+                }
+            }
+        } else {
+            println!("{}: {}", self.time, self.message);
+        }
     }
 }
 #[derive(Debug)]

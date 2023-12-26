@@ -1,4 +1,3 @@
-use bincode;
 use super::*;
 
 pub fn add_string_to_payload(payload: &mut Vec<u8>, string: &str) {

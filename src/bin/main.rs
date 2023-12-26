@@ -32,30 +32,30 @@ fn handle_incoming_data(data: &[u8]) {
     if DEBUG {
         println!("Message: {:?}", message);
     }
-    println!("Magic Number: {:#x}", magic_number);
-    println!("Schema Number: {:x}", schema_number);
-    println!("Received message: {:?}", data);
-    println!("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    // println!("Magic Number: {:#x}", magic_number);
+    // println!("Schema Number: {:x}", schema_number);
+    // println!("Received message: {:?}", data);
+    // println!("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     //get messagetype from the payload
     let messagetype = u32::from_be_bytes([payload[0], payload[1], payload[2], payload[3]]);
-    println!("Message Type: {:x}", messagetype); 
+    // println!("Message Type: {:x}", messagetype); 
     match messagetype {
-        0 => decode_heartbeat(payload, DEBUG),
-        1 => decode_status(payload, DEBUG),
-        2 => decode_decode(payload, true),
-        3 => decode_clear(payload, true),
-        4 => decode_reply(payload, DEBUG),
-        5 => decode_logdata(payload, DEBUG),
-        6 => decode_close(payload, true),
-        7 => decode_replay(payload, DEBUG),
-        8 => decode_halt_tx(payload, DEBUG),
-        9 => decode_free_text(payload, DEBUG),
-        10 => decode_wspr_decode(payload, DEBUG),
-        11 => decode_location(payload, DEBUG),
-        12 => decode_logged_adif(payload, DEBUG),
-        13 => decode_highlight_callsign_in(payload, DEBUG),
-        14 => decode_switch_configuration(payload, DEBUG),
-        15 => decode_configure(payload, DEBUG),
+        0 => { decode_heartbeat(payload, DEBUG); }
+        1 => { decode_status(payload, DEBUG); }
+        2 => { decode_decode(payload, DEBUG).print_message() ; }
+        3 => { decode_clear(payload, true); }
+        4 => { decode_reply(payload, DEBUG); }
+        5 => { decode_logdata(payload, DEBUG); }
+        6 => { decode_close(payload, true); }
+        7 => { decode_replay(payload, DEBUG); }
+        8 => { decode_halt_tx(payload, DEBUG); }
+        9 => { decode_free_text(payload, DEBUG); }
+        10 => { decode_wspr_decode(payload, DEBUG); }
+        11 => { decode_location(payload, DEBUG); }
+        12 => { decode_logged_adif(payload, DEBUG); }
+        13 => { decode_highlight_callsign_in(payload, DEBUG); }
+        14 => { decode_switch_configuration(payload, DEBUG); }
+        15 => { decode_configure(payload, DEBUG); }
         _ => eprintln!("Unknown Message Type"),
     };
 }
@@ -66,8 +66,9 @@ fn main() {
         let mut buffer = [0u8; 4096];
         match socket.recv_from(&mut buffer) {
             Ok((size, src)) => {
-                println!("Received data from: {}", src);
-
+                if DEBUG {
+                    println!("Received {} bytes from: {}", size, src);
+                }
                 handle_incoming_data(&buffer[..size]);
 
                 // let close = Close {
@@ -79,12 +80,12 @@ fn main() {
                 //     id: "rustyserv".to_string(),
                 //     window: 2,
                 // };
-                let free_text = FreeText {
-                    message_type: 9,
-                    id: "rustyserv".to_string(),
-                    text: "SUCCESSS!!!".to_string(),
-                    send: true,
-                };
+                // let free_text = FreeText {
+                //     message_type: 9,
+                //     id: "rustyserv".to_string(),
+                //     text: "SUCCESSS!!!".to_string(),
+                //     send: true,
+                // };
                 // let encoded_close = encode_close(&close);
                 // let encoded_close = encode_message(encoded_close);
                 // send_encoded_message(&socket, encoded_close, src).expect("Failed to send Close message");
@@ -92,9 +93,9 @@ fn main() {
                 // let encoded_clear = encode_message(encoded_clear);
 
                 // send_encoded_message(&socket, encoded_clear, src).expect("Failed to send Clear message");
-                let encoded_free_text = encode_free_text(&free_text);
-                let encoded_free_text = encode_message(encoded_free_text);
-                send_encoded_message(&socket, encoded_free_text, src).expect("Failed to send Free Text message");
+                // let encoded_free_text = encode_free_text(&free_text);
+                // let encoded_free_text = encode_message(encoded_free_text);
+                // send_encoded_message(&socket, encoded_free_text, src).expect("Failed to send Free Text message");
             },
             Err(e) => eprintln!("Couldn't receive a datagram: {}", e),
         }

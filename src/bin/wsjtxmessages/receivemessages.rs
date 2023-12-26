@@ -61,8 +61,10 @@ fn get_f64_from_payload(payload: &[u8]) -> (f64, &[u8]) {
     (value, rest)
 }
 
-pub fn decode_heartbeat(payload: &[u8], debug: bool) {
-    println!("Heartbeat message");
+pub fn decode_heartbeat(payload: &[u8], debug: bool) -> Heartbeat{
+    if debug {
+        println!("Heartbeat message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (maximum_schema_number, rest) = get_u32_from_payload(rest);      
@@ -78,10 +80,13 @@ pub fn decode_heartbeat(payload: &[u8], debug: bool) {
     if debug {
         println!("Heartbeat: {}", heartbeat)
     }
+    heartbeat
 }
 
-pub fn decode_status(payload: &[u8], debug: bool) {
-    println!("Status message");
+pub fn decode_status(payload: &[u8], debug: bool) -> Status {
+    if debug {
+        println!("Status message");
+    }
     // println!("Payload: {:?}", payload);
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -135,10 +140,13 @@ pub fn decode_status(payload: &[u8], debug: bool) {
     if debug {
         println!("Status: {}", status);
     }
+    status
 }
 
-pub fn decode_decode(payload: &[u8], debug: bool) {
-    println!("Decode message");
+pub fn decode_decode(payload: &[u8], debug: bool) -> Decode {
+    if debug {
+        println!("Decode message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (new, rest) = get_bool_from_payload(rest);
@@ -167,10 +175,13 @@ pub fn decode_decode(payload: &[u8], debug: bool) {
     if debug {
         println!("Decode: {}", decode);
     }
+    decode
 }
 
-pub fn decode_clear(payload: &[u8], debug: bool){
-    println!("Clear message");
+pub fn decode_clear(payload: &[u8], debug: bool) -> Clear{
+    if debug {
+        println!("Clear message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (window, _rest) = get_u8_from_payload(rest);
@@ -182,10 +193,13 @@ pub fn decode_clear(payload: &[u8], debug: bool){
     if debug {
         println!("Clear: {}", clear);
     }
+    clear
 }
 
-pub fn decode_reply(payload: &[u8], debug: bool){
-    println!("Reply message");
+pub fn decode_reply(payload: &[u8], debug: bool) -> Reply{
+    if debug {
+        println!("Reply message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (time, rest) = get_u32_from_payload(rest);
@@ -212,10 +226,13 @@ pub fn decode_reply(payload: &[u8], debug: bool){
     if debug {
         println!("Reply: {}", reply);
     }
+    reply
 }
 
-pub fn decode_logdata(payload: &[u8], debug: bool){
-    println!("Logged QSO!");
+pub fn decode_logdata(payload: &[u8], debug: bool) -> LogData{
+    if debug {
+        println!("LogData message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (date_time_off, rest) = get_u64_from_payload(rest);
@@ -261,10 +278,13 @@ pub fn decode_logdata(payload: &[u8], debug: bool){
     if debug {
         println!("LogData: {}", logdata);
     }
+    logdata
 }
 
-pub fn decode_close(payload: &[u8], debug: bool){
-    println!("Close message");
+pub fn decode_close(payload: &[u8], debug: bool) -> Close{
+    if debug {
+        println!("Close message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, _rest) = get_string_from_payload(rest);
     let close = Close {
@@ -274,10 +294,13 @@ pub fn decode_close(payload: &[u8], debug: bool){
     if debug {
         println!("Close: {}", close);
     }
+    close
 }
 
-pub fn decode_replay(payload: &[u8], debug: bool){
-    println!("Replay message");
+pub fn decode_replay(payload: &[u8], debug: bool) -> Replay{
+    if debug {
+        println!("Replay message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, _rest) = get_string_from_payload(rest);
     let replay = Replay {
@@ -287,10 +310,13 @@ pub fn decode_replay(payload: &[u8], debug: bool){
     if debug {
         println!("Replay: {}", replay);
     }
+    replay
 }
 
-pub fn decode_halt_tx(payload: &[u8], debug: bool){
-    println!("Halt Tx message");
+pub fn decode_halt_tx(payload: &[u8], debug: bool) -> HaltTx{
+    if debug {
+        println!("Halt Tx message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (auto_tx_only, _rest) = get_bool_from_payload(rest);
@@ -302,9 +328,12 @@ pub fn decode_halt_tx(payload: &[u8], debug: bool){
     if debug {
         println!("HaltTx: {}", halt_tx);
     }
+    halt_tx
 }
-pub fn decode_free_text(payload: &[u8], debug: bool){
-    println!("Free Text message");
+pub fn decode_free_text(payload: &[u8], debug: bool) -> FreeText{
+    if debug {
+        println!("Free Text message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (text, rest) = get_string_from_payload(rest);
@@ -318,10 +347,13 @@ pub fn decode_free_text(payload: &[u8], debug: bool){
     if debug {
         println!("FreeText: {}", freetext);
     }
+    freetext
 }
 
-pub fn decode_wspr_decode(payload: &[u8], debug: bool){
-    println!("WSPR Decode message");
+pub fn decode_wspr_decode(payload: &[u8], debug: bool) -> WSPRDecode{
+    if debug {
+        println!("WSPR Decode message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (new, rest) = get_bool_from_payload(rest);
@@ -352,10 +384,13 @@ pub fn decode_wspr_decode(payload: &[u8], debug: bool){
     if debug {
         println!("WSPRDecode: {}", wsprdecode);
     }
+    wsprdecode
 }
 
-pub fn decode_location(payload: &[u8], debug: bool){
-    println!("Location message");
+pub fn decode_location(payload: &[u8], debug: bool) -> Location { 
+    if debug {
+        println!("Location message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (location, _rest) = get_string_from_payload(rest);
@@ -367,10 +402,13 @@ pub fn decode_location(payload: &[u8], debug: bool){
     if debug {
         println!("Location: {}", location);
     }
+    location
 }
 
-pub fn decode_logged_adif(payload: &[u8], debug: bool){
-    println!("Logged ADIF message");
+pub fn decode_logged_adif(payload: &[u8], debug: bool) -> LoggedADIF{
+    if debug {
+        println!("Logged ADIF message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (adif, _rest) = get_string_from_payload(rest);
@@ -382,10 +420,13 @@ pub fn decode_logged_adif(payload: &[u8], debug: bool){
     if debug {
         println!("LoggedADIF: {}", loggedadif);
     }
+    loggedadif
 }
 
-pub fn decode_highlight_callsign_in(payload: &[u8], debug: bool) {
-    println!("Highlight Callsign In message");
+pub fn decode_highlight_callsign_in(payload: &[u8], debug: bool) -> HighlightCallsignIn{
+    if debug {
+        println!("Highlight Callsign In message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (callsign, rest) = get_string_from_payload(rest);
@@ -403,10 +444,13 @@ pub fn decode_highlight_callsign_in(payload: &[u8], debug: bool) {
     if debug {
         println!("HighlightCallsignIn: {}", highlightcallsignin);
     }
+    highlightcallsignin
 }
 
-pub fn decode_switch_configuration(payload: &[u8], debug: bool) {
-    println!("Switch Configuration message");
+pub fn decode_switch_configuration(payload: &[u8], debug: bool) -> SwitchConfiguration{
+    if debug {
+        println!("Switch Configuration message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (configuration_name, _rest) = get_string_from_payload(rest);
@@ -418,10 +462,13 @@ pub fn decode_switch_configuration(payload: &[u8], debug: bool) {
     if debug {
         println!("SwitchConfiguration: {}", switchconfiguration);
     }
+    switchconfiguration
 }
 
-pub fn decode_configure(payload: &[u8], debug: bool) {
-    println!("Configure message");
+pub fn decode_configure(payload: &[u8], debug: bool) -> Configure{
+    if debug {
+        println!("Configure message");
+    }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
     let (mode, rest) = get_string_from_payload(rest);
@@ -449,4 +496,5 @@ pub fn decode_configure(payload: &[u8], debug: bool) {
     if debug {
         println!("Configure: {}", configure);
     }
+    configure
 }
