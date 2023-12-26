@@ -7,7 +7,7 @@ use chrono::offset::Utc;
 use byteorder::{ByteOrder, BigEndian};
 use serde_derive::Serialize;
 use colored::*;
-use maidenhead::grid_to_longlat;
+use maidenhead::{grid_to_longlat, MHError};
 use reverse_geocoder::{ReverseGeocoder, SearchResult};
 use iso3166_1::CountryCode;
 
@@ -94,29 +94,44 @@ impl Decode {
         if self.message.starts_with("CQ") {
             let parts: Vec<&str> = self.message.split_whitespace().collect();
             if parts.len() >= 3 {
-                let gridsquare = parts[2];
-                // println!("{}", self.message.green());
-                let result = grid_to_longlat(&gridsquare);
-                match result {
-                    Ok((lat, lon)) => {
-                        let geocoder = ReverseGeocoder::new();
-                        let search_result = geocoder.search((lat,lon));
-                        let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
-                        // println!("Search Result: {:?}", search_result.record);
-                        println!("{}: CQ de {} {}, Country: {}, State: {}, City: {}",
-                        self.time, parts[1].green(), parts[2].green(), country.name.green(), 
-                        search_result.record.admin1.green(), search_result.record.name.green());
-                    }
-                    Err(e) => {
-                        println!("Error: {}", e);
-                    }
-                }
+                self.handle_cq_message(parts);
             }
         } else {
-            println!("{}: {}", self.time, self.message);
+            self.print_non_cq_message();
         }
     }
+
+    fn handle_cq_message(&self, parts: Vec<&str>) {
+        let gridsquare = parts[2];
+        match grid_to_longlat(&gridsquare) {
+            Ok((lat, lon)) => {
+                let geocoder = ReverseGeocoder::new();
+                let search_result = geocoder.search((lon,lat));
+                let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
+                self.print_cq_message(parts, country, &search_result);
+            }
+            Err(e) => {
+                self.print_error_message(e);
+            }
+        }
+    }
+
+    fn print_non_cq_message(&self) {
+        println!("{}: SNR: {} {}", self.time, self.snr.to_string().red(), self.message);
+    }
+
+    fn print_error_message(&self, e: MHError) {
+        self.print_non_cq_message();
+        println!("Error: {}", e);
+    }
+
+    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult) {
+        println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
+        self.time, self.snr.to_string().red(), parts[1].green(), parts[2].green(), country.name.green(), 
+        search_result.record.admin1.green(), search_result.record.name.green());
+    }
 }
+
 #[derive(Debug)]
 pub struct Clear {
     pub message_type: u32,
