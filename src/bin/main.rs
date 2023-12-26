@@ -2,16 +2,21 @@ pub mod wsjtxmessages;
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
 use std::str::EncodeUtf16;
+use colored::*;
 // use std::str;
 pub use wsjtxmessages::*;
 pub use wsjtxmessages::receivemessages::*;
 pub use wsjtxmessages::sendmessages::*;
+
 
 const DEBUG: bool = false;
 
 
 
 fn main() {
+    //uncomment below line for windows 
+    //set_virtual_terminal(true).unwrap();
+    println!("{}","WSJTX Message Server".green().bold());
     let socket = UdpSocket::bind("127.0.0.1:2237").expect("Could not bind socket");
     loop {
         let mut buffer = [0u8; 4096];
