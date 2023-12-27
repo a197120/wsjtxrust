@@ -89,18 +89,18 @@ impl std::fmt::Display for Decode{
     }
 }
 impl Decode {
-    pub fn print_message(&self) {
+    pub fn print_message(&self, app_state: &AppState) {
         let parts: Vec<&str> = self.message.split_whitespace().collect();
         if self.message.starts_with("CQ") {
             if parts.len() >= 3 {
-                self.handle_cq_message(parts);
+                self.handle_cq_message(parts, &app_state);
             }
         } else {
-            self.print_non_cq_message(parts);
+            self.print_non_cq_message(parts, &app_state);
         }
     }
 
-    fn handle_cq_message(&self, parts: Vec<&str>) {
+    fn handle_cq_message(&self, parts: Vec<&str>, app_state: &AppState) {
         let gridsquare;
         let typical;
         if parts.len() == 3 {
@@ -116,20 +116,19 @@ impl Decode {
                 let geocoder = ReverseGeocoder::new();
                 let search_result = geocoder.search((lon,lat));
                 let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
-                self.print_cq_message(parts, country, &search_result, typical);
+                self.print_cq_message(parts, country, &search_result, typical, &app_state);
             }
             Err(e) => {
-                self.print_error_message(e, parts);
+                self.print_error_message(e, parts, &app_state);
             }
         }
     }
-    fn alert_designated_callsign(&self, parts: Vec<&str>) -> Vec<String> {
-        let designated_callsigns = vec!["KE8TKS", "KC4JXH", "KB9TYC"];
+
+    fn alert_designated_callsign(&self, parts: Vec<&str>, app_state: &AppState) -> Vec<String> {
         let mut highlighted_parts = Vec::new();
         for part in parts {
-            if designated_callsigns.contains(&part) {
-                println!("designated callsign found {}", &part);
-                println!("\x07"); // bell character
+            if app_state.designated_callsigns.contains(&part.to_string()) {
+                print!("\x07"); // bell character
                 highlighted_parts.push(part.black().on_white().to_string()); // highlight the callsign
             } else {
                 highlighted_parts.push(part.to_string());
@@ -137,14 +136,14 @@ impl Decode {
         }
         highlighted_parts
     }
-    fn print_non_cq_message(&self, parts: Vec<&str>) {  
-        let highlighted_parts = self.alert_designated_callsign(parts);
+    fn print_non_cq_message(&self, parts: Vec<&str>, app_state: &AppState) {  
+        let highlighted_parts = self.alert_designated_callsign(parts, &app_state);
         let message = highlighted_parts.join(" ");
         println!("{}: SNR: {} {}", self.time, self.format_snr(), message);
     }
 
-    fn print_error_message(&self, e: MHError, parts: Vec<&str>) {
-        self.print_non_cq_message(parts);
+    fn print_error_message(&self, e: MHError, parts: Vec<&str>, app_state: &AppState) {
+        self.print_non_cq_message(parts, &app_state);
         println!("Error: {}", e);
     }
     fn format_snr(&self) -> ColoredString {
@@ -154,8 +153,8 @@ impl Decode {
             self.snr.to_string().red()
         }
     }
-    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool) {
-        let highlighted_parts = self.alert_designated_callsign(parts);
+    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool, app_state: &AppState) {
+        let highlighted_parts = self.alert_designated_callsign(parts, &app_state);
 
         if typical {
             println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",

@@ -1,4 +1,5 @@
 pub mod wsjtxmessages;
+pub mod appstate;
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
 use std::str::EncodeUtf16;
@@ -7,6 +8,7 @@ use colored::*;
 pub use wsjtxmessages::*;
 pub use wsjtxmessages::receivemessages::*;
 pub use wsjtxmessages::sendmessages::*;
+pub use appstate::*;
 
 
 const DEBUG: bool = false;
@@ -14,6 +16,8 @@ const DEBUG: bool = false;
 
 
 fn main() {
+    let app_state = AppState::new().expect("Could not read callsigns");
+    println!("Designated Callsigns: {:?}", app_state.designated_callsigns);
     //uncomment below line for windows 
     //set_virtual_terminal(true).unwrap();
     println!("{}","WSJTX Message Server".green().bold());
@@ -25,7 +29,7 @@ fn main() {
                 if DEBUG {
                     println!("Received {} bytes from: {}", size, src);
                 }
-                handle_incoming_data(&buffer[..size]);
+                handle_incoming_data(&buffer[..size], &app_state);
 
                 // let close = Close {
                 //     message_type: 6,

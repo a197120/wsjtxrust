@@ -499,7 +499,7 @@ pub fn decode_configure(payload: &[u8], debug: bool) -> Configure{
     configure
 }
 
-pub fn handle_incoming_data(data: &[u8]) {
+pub fn handle_incoming_data(data: &[u8], app_state: &AppState) {
     if data.len() < 8 {
         eprintln!("Data too short to be a valid message");
         return;
@@ -528,7 +528,7 @@ pub fn handle_incoming_data(data: &[u8]) {
     match messagetype {
         0 => { decode_heartbeat(payload, DEBUG); }
         1 => { decode_status(payload, DEBUG); }
-        2 => { decode_decode(payload, DEBUG).print_message() ; }
+        2 => { decode_decode(payload, DEBUG).print_message(&app_state) ; }
         3 => { decode_clear(payload, true); }
         4 => { decode_reply(payload, DEBUG); }
         5 => { decode_logdata(payload, DEBUG); }
