@@ -6,7 +6,6 @@ use chrono::offset::Utc;
 // use sendmessages::*;
 use byteorder::{ByteOrder, BigEndian};
 use serde_derive::Serialize;
-use colored::*;
 use maidenhead::{grid_to_longlat, MHError};
 use reverse_geocoder::{ReverseGeocoder, SearchResult};
 use iso3166_1::CountryCode;
@@ -102,13 +101,22 @@ impl Decode {
     }
 
     fn handle_cq_message(&self, parts: Vec<&str>) {
-        let gridsquare = parts[2];
+        let gridsquare;
+        let typical;
+        if parts.len() == 3 {
+            typical = true;
+            gridsquare = parts[2];
+        }
+        else {
+            typical = false;
+            gridsquare = parts[3];
+        }
         match grid_to_longlat(&gridsquare) {
             Ok((lat, lon)) => {
                 let geocoder = ReverseGeocoder::new();
                 let search_result = geocoder.search((lon,lat));
                 let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
-                self.print_cq_message(parts, country, &search_result);
+                self.print_cq_message(parts, country, &search_result, typical);
             }
             Err(e) => {
                 self.print_error_message(e);
@@ -131,10 +139,16 @@ impl Decode {
             self.snr.to_string().red()
         }
     }
-    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult) {
-        println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
-        self.time, self.format_snr(), parts[1].green(), parts[2].green(), country.name.green(), 
-        search_result.record.admin1.green(), search_result.record.name.green());
+    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool) {
+        if typical {
+            println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
+            self.time, self.format_snr(), parts[1].green(), parts[2].green(), country.name.green(), 
+            search_result.record.admin1.green(), search_result.record.name.green());
+        } else {
+            println!("{}: SNR: {} {}, Country: {}, State: {}, City: {}",
+            self.time, self.format_snr(), self.message, country.name.green(), 
+            search_result.record.admin1.green(), search_result.record.name.green());
+        }
     }
 }
 
