@@ -1,3 +1,4 @@
+//anything using qcolor or qtypes is tested yet, proceed with caution if using these objects.
 pub mod receivemessages;
 pub mod sendmessages;
 use chrono::{DateTime, TimeZone, NaiveTime, Timelike};

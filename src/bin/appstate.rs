@@ -2,8 +2,6 @@ use std::fs;
 use std::sync::Arc;
 use std::io::{self, BufRead};
 use std::path::Path;
-
-use super::*;
 pub struct AppState {
     pub designated_callsigns: Arc<Vec<String>>,
 }
