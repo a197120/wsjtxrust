@@ -90,18 +90,18 @@ impl std::fmt::Display for Decode{
     }
 }
 impl Decode {
-    pub fn print_message(&self, app_state: &AppState) {
+    pub fn print_message(&self, app_state: &mut AppState) {
         let parts: Vec<&str> = self.message.split_whitespace().collect();
         if self.message.starts_with("CQ") {
             if parts.len() >= 3 {
-                self.handle_cq_message(parts, &app_state);
+                self.handle_cq_message(parts, app_state);
             }
         } else {
-            self.print_non_cq_message(parts, &app_state);
+            self.print_non_cq_message(parts, app_state);
         }
     }
 
-    fn handle_cq_message(&self, parts: Vec<&str>, app_state: &AppState) {
+    fn handle_cq_message(&self, parts: Vec<&str>, app_state: &mut AppState) {
         let gridsquare;
         let typical;
         if parts.len() == 3 {
@@ -117,54 +117,54 @@ impl Decode {
                 let geocoder = ReverseGeocoder::new();
                 let search_result = geocoder.search((lon,lat));
                 let country = iso3166_1::alpha2(&search_result.record.cc).unwrap();
-                self.print_cq_message(parts, country, &search_result, typical, &app_state);
+                self.print_cq_message(parts, country, &search_result, typical, app_state);
             }
             Err(e) => {
-                self.print_error_message(e, parts, &app_state);
+                self.print_error_message(e, parts, app_state);
             }
         }
     }
 
-    fn alert_designated_callsign(&self, parts: Vec<&str>, app_state: &AppState) -> Vec<String> {
+    fn alert_designated_callsign(&self, parts: Vec<&str>, app_state: &mut AppState) -> Vec<String> {
         let mut highlighted_parts = Vec::new();
         for part in parts {
             if app_state.designated_callsigns.contains(&part.to_string()) {
                 print!("\x07"); // bell character
-                highlighted_parts.push(part.black().on_white().to_string()); // highlight the callsign
+                highlighted_parts.push(part.to_string()); // highlight the callsign
             } else {
                 highlighted_parts.push(part.to_string());
             }
         }
         highlighted_parts
     }
-    fn print_non_cq_message(&self, parts: Vec<&str>, app_state: &AppState) {  
-        let highlighted_parts = self.alert_designated_callsign(parts, &app_state);
+    fn print_non_cq_message(&self, parts: Vec<&str>, app_state: &mut AppState) {  
+        let highlighted_parts = self.alert_designated_callsign(parts, app_state);
         let message = highlighted_parts.join(" ");
-        println!("{}: SNR: {} {}", self.time, self.format_snr(), message);
+        app_state.decode_strings.push(format!("{}: SNR: {} {}", self.time, self.format_snr(), message));
     }
 
-    fn print_error_message(&self, e: MHError, parts: Vec<&str>, app_state: &AppState) {
-        self.print_non_cq_message(parts, &app_state);
-        println!("Error: {}", e);
+    fn print_error_message(&self, e: MHError, parts: Vec<&str>, app_state: &mut AppState) {
+        self.print_non_cq_message(parts, app_state);
+        app_state.decode_strings.push(format!("Error: {}", e));
     }
-    fn format_snr(&self) -> ColoredString {
+    fn format_snr(&self) -> String {
         if self.snr >= 0 {
-            format!("+{}", self.snr).green()
+            format!("+{}", self.snr)
         } else {
-            self.snr.to_string().red()
+            self.snr.to_string()
         }
     }
-    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool, app_state: &AppState) {
-        let highlighted_parts = self.alert_designated_callsign(parts, &app_state);
+    fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool, app_state: &mut AppState) {
+        let highlighted_parts = self.alert_designated_callsign(parts, app_state);
 
         if typical {
-            println!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
-            self.time, self.format_snr(), highlighted_parts[1].green(), highlighted_parts[2].green(), country.name.green(), 
-            search_result.record.admin1.green(), search_result.record.name.green());
+            app_state.decode_strings.push(format!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
+            self.time, self.format_snr(), highlighted_parts[1], highlighted_parts[2], country.name, 
+            search_result.record.admin1, search_result.record.name));
         } else {
-            println!("{}: SNR: {} CQ {} {} {}, Country: {}, State: {}, City: {}",
-            self.time, self.format_snr(), highlighted_parts[1].bold().blue(), highlighted_parts[2].green(), highlighted_parts[3].green(), country.name.green(), 
-            search_result.record.admin1.green(), search_result.record.name.green());
+            app_state.decode_strings.push(format!("{}: SNR: {} CQ {} {} {}, Country: {}, State: {}, City: {}",
+            self.time, self.format_snr(), highlighted_parts[1], highlighted_parts[2], highlighted_parts[3], country.name, 
+            search_result.record.admin1, search_result.record.name));
         }
     }
 }

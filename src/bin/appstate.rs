@@ -2,10 +2,23 @@ use std::fs;
 use std::sync::Arc;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::default::Default;
+
 pub struct AppState {
     pub designated_callsigns: Arc<Vec<String>>,
+    pub should_quit: bool,
+    pub decode_strings: Vec<String>,
 }
 
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            designated_callsigns: Arc::new(Vec::new()),
+            should_quit: false,
+            decode_strings: Vec::new(),
+        }
+    }
+}
 impl AppState {
     pub fn new() -> io::Result<Self> {
         let callsigns_path = Path::new("callsigns.txt");
@@ -17,6 +30,11 @@ impl AppState {
                 .filter_map(io::Result::ok)
                 .collect()
         );
-        Ok(Self { designated_callsigns })
+        Ok(Self { designated_callsigns, ..Self::default() })
+    }
+    pub fn tick(&self) {}
+    pub fn quit(&mut self) {
+        self.should_quit = true;
     }
 }
+

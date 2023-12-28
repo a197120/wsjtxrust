@@ -1,34 +1,65 @@
 pub mod wsjtxmessages;
 pub mod appstate;
+pub mod event;
+pub mod ui;
+pub mod tui;
+pub mod update;
+use ratatui::prelude::*;
+use std::io::{stdout};
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
-use colored::*;
+// use colored::*;
 // use std::str;
 pub use wsjtxmessages::*;
 pub use wsjtxmessages::receivemessages::*;
 pub use wsjtxmessages::sendmessages::*;
 pub use appstate::*;
-
+use color_eyre::Result;
+use event::{Event, EventHandler};
+use ratatui::{backend::CrosstermBackend, Terminal};
+use tui::Tui;
+use update::update;
 
 const DEBUG: bool = false;
 
 
 
-fn main() {
-    let app_state = AppState::new().expect("Could not read callsigns");
-    println!("Designated Callsigns: {:?}", app_state.designated_callsigns);
+fn main() -> Result<()> {
+
+    let mut appstate = AppState::new().expect("Could not read callsigns");
+    println!("Designated Callsigns: {:?}", appstate.designated_callsigns);
     //uncomment below line for windows 
     //set_virtual_terminal(true).unwrap();
-    println!("{}","WSJTX Message Server".green().bold());
+    println!("{}","WSJTX Message Server");
+
+    // Initialize the terminal user interface.
+    let backend = CrosstermBackend::new(std::io::stderr());
+    let terminal = Terminal::new(backend)?;
+    let events = EventHandler::new(25);
+    let mut tui = Tui::new(terminal, events);
+    tui.enter()?;
+
     let socket = UdpSocket::bind("127.0.0.1:2237").expect("Could not bind socket");
-    loop {
+    socket.set_nonblocking(true).expect("Failed to enter non-blocking mode");
+    while !appstate.should_quit {
+        //render UI
+        tui.draw(&mut appstate)?; 
+        //Handle Events
+        match tui.events.next()? {
+            Event::Tick => {}
+            Event::Key(key_event) => update(&mut appstate, key_event),
+            Event::Mouse(_) => {}
+            Event::Resize(_, _) => {}
+        };
+
         let mut buffer = [0u8; 4096];
         match socket.recv_from(&mut buffer) {
             Ok((size, src)) => {
                 if DEBUG {
                     println!("Received {} bytes from: {}", size, src);
                 }
-                handle_incoming_data(&buffer[..size], &app_state);
+
+                handle_incoming_data(&buffer[..size], &mut appstate);
 
                 // let close = Close {
                 //     message_type: 6,
@@ -56,8 +87,14 @@ fn main() {
                 // let encoded_free_text = encode_message(encoded_free_text);
                 // send_encoded_message(&socket, encoded_free_text, src).expect("Failed to send Free Text message");
             },
+            Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
+                // there's no packet, continue the loop
+            },
             Err(e) => eprintln!("Couldn't receive a datagram: {}", e),
         }
+
     }
+    tui.exit()?;
+    Ok(())
 }
 
