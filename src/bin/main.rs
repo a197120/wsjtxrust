@@ -2,7 +2,6 @@ pub mod wsjtxmessages;
 pub mod appstate;
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
-use std::str::EncodeUtf16;
 use colored::*;
 // use std::str;
 pub use wsjtxmessages::*;
