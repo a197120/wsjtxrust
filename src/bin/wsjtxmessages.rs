@@ -10,6 +10,7 @@ use serde_derive::Serialize;
 use maidenhead::{grid_to_longlat, MHError};
 use reverse_geocoder::{ReverseGeocoder, SearchResult};
 use iso3166_1::CountryCode;
+use ratatui::prelude::*;
 use super::*;
 
 #[derive(Debug, Serialize)]

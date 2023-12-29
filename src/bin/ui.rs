@@ -1,6 +1,6 @@
 use ratatui::{
     layout::{Constraint, Direction, Layout, Rect},
-    prelude::{Alignment, Frame},
+    prelude::*,
     style::{Color, Style},
     text::{Line, Span, Text},
     widgets::{StatefulWidget, Block, BorderType, Borders, Paragraph, List, ListItem},
@@ -20,25 +20,25 @@ pub fn render(appstate: &mut AppState, f: &mut Frame) {
     .split(f.size());
 
 
-  //   f.render_widget(
-  //   List::new(format!(
-  //     "
-  //       Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
-  //       Designated Callsigns: {}
-  //     ",
-  //     appstate.designated_callsigns.join(", ")
-  //   ))
-  //   .block(
-  //     Block::default()
-  //       .title("WSJTX Message Server")
-  //       .title_alignment(Alignment::Center)
-  //       .borders(Borders::ALL)
-  //       .border_type(BorderType::Rounded),
-  //   )
-  //   .style(Style::default().fg(Color::Yellow))
-  //   .alignment(Alignment::Center),
-  //   chunks[2],
-  // )
+//     f.render_widget(
+//     List::new(format!(
+//       "
+//         Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
+//         Designated Callsigns: {}
+//       ",
+//       appstate.designated_callsigns.join(", ")
+//     ))
+//     .block(
+//       Block::default()
+//         .title("WSJTX Message Server")
+//         .title_alignment(Alignment::Center)
+//         .borders(Borders::ALL)
+//         .border_type(BorderType::Rounded),
+//     )
+//     .style(Style::default().fg(Color::Yellow))
+//     .alignment(Alignment::Center),
+//     chunks[2],
+//   );
   let items: Vec<ListItem> = appstate.decode_strings.iter().map(|i| ListItem::new(i.clone())).collect();
 
   f.render_widget(
