@@ -3,7 +3,6 @@ use std::sync::Arc;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::default::Default;
-use ratatui::widgets::ListState;
 use crate::ui::StatefulList;
 
 

@@ -3,7 +3,7 @@ use ratatui::{
     prelude::*,
     style::{Color, Style},
     text::{Line, Span, Text},
-    widgets::{StatefulWidget, ListState, Block, BorderType, Borders, Paragraph, List, ListItem},
+    widgets::{ListState, Block, BorderType, Borders, Paragraph, List, ListItem},
 };
 
 use crate::appstate::AppState;
@@ -61,6 +61,8 @@ pub fn create_status_paragraph(appstate: &AppState) -> Paragraph {
     let parts: Vec<&str> = appstate.status_string.split_whitespace().collect();
     let mut vec_of_spans: Vec<Span> = Vec::new();
 
+    let mut previous_part = "";
+
     for part in parts {
         let mut style = Style::new();
         if part == "true" || part == "true," {
@@ -69,18 +71,23 @@ pub fn create_status_paragraph(appstate: &AppState) -> Paragraph {
         } else if part == "false" || part == "false," {
             style = style.bg(Color::Red);
             vec_of_spans.push(Span::styled(" X ", style));
-
-        }else {
+        } else if previous_part == "ID:" || previous_part == "Mode:" || previous_part == "Freq:" {
+            style = style.fg(Color::Blue);
             vec_of_spans.push(Span::styled(part, style));
-            vec_of_spans.push(Span::raw(" "));
+        } else {
+            vec_of_spans.push(Span::styled(part, style));
         }
+        vec_of_spans.push(Span::raw(" "));
+        previous_part = part;
     }
+
     let line = Line::from(vec_of_spans);
     let text = Text::from(vec![line]);
 
     Paragraph::new(text)
-        .style(Style::default().fg(Color::White))
+        .style(Style::default().fg(Color::Gray))
 }
+
 
 pub fn render(appstate: &mut AppState, f: &mut Frame) {
     // Create the layout sections.
@@ -97,11 +104,17 @@ pub fn render(appstate: &mut AppState, f: &mut Frame) {
         let parts: Vec<&str> = i.split_whitespace().collect();
         let mut vec_of_spans: Vec<Span> = Vec::new();
         let mut make_green = false;
+        let mut make_blue = false;
         for part in parts {
             let mut style = Style::new();
             if make_green {
                 style = style.fg(Color::Green);
-            } else if part.starts_with("-") {
+            } 
+            else if make_blue {
+                style = style.fg(Color::LightBlue);
+            }
+            
+            else if part.starts_with("-") {
                 style = style.fg(Color::Red);
             } else if part.starts_with("+") {
                 style = style.fg(Color::Green);
@@ -113,7 +126,11 @@ pub fn render(appstate: &mut AppState, f: &mut Frame) {
             if ["Country:", "State:", "City:"].contains(&part) {
                 make_green = true;
             }
+            if "de".contains(&part) {
+                make_blue = true;
+            }
             if part.ends_with(",") {
+                make_blue = false;
                 make_green = false;
             }
         }
@@ -126,7 +143,7 @@ pub fn render(appstate: &mut AppState, f: &mut Frame) {
 
 
     let list = List::new(items)
-        .block(Block::default().title("List").borders(Borders::ALL))
+        .block(Block::default().title("Decodes").borders(Borders::ALL).border_type(BorderType::Rounded))
         .highlight_style(Style::default().add_modifier(Modifier::BOLD))
         .highlight_symbol("> ");
 
@@ -134,14 +151,14 @@ pub fn render(appstate: &mut AppState, f: &mut Frame) {
 
     let status_paragraph = create_status_paragraph(appstate);
     let top_panel = status_paragraph
-        .style(Style::default().fg(Color::White))
-        .block(Block::default().borders(Borders::ALL).title("Client Info"));
+        .style(Style::default().fg(Color::Gray))
+        .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Client Info"));
     f.render_widget(top_panel, chunks[0]);
     // WORKING CODE FOR BOTTOM PANEL
 
     let bottom_panel = Paragraph::new("Press 'q' to quit")
-        .style(Style::default().fg(Color::White))
-        .block(Block::default().borders(Borders::ALL).title("Status"));
+        .style(Style::default().fg(Color::Gray))
+        .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded).title("Status"));
     f.render_widget(bottom_panel, chunks[2]);
 
     /// helper function to create a centered rect using up certain percentage of the available rect `r`

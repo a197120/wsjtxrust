@@ -4,8 +4,6 @@ pub mod event;
 pub mod ui;
 pub mod tui;
 pub mod update;
-use ratatui::prelude::*;
-use std::io::{stdout};
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
 // use colored::*;
