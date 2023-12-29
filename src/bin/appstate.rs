@@ -3,12 +3,17 @@ use std::sync::Arc;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::default::Default;
+use ratatui::widgets::ListState;
+use crate::ui::StatefulList;
+
 
 pub struct AppState {
     pub designated_callsigns: Arc<Vec<String>>,
     pub should_quit: bool,
     pub decode_strings: Vec<String>,
     pub status_string: String,  
+    pub list_state: StatefulList<String>,
+    pub should_redraw: bool,
 }
 
 impl Default for AppState {
@@ -18,6 +23,8 @@ impl Default for AppState {
             should_quit: false,
             decode_strings: Vec::new(),
             status_string: String::new(),
+            list_state: StatefulList::with_items(vec![]),
+            should_redraw: true,
         }
     }
 }
