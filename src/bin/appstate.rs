@@ -8,6 +8,7 @@ pub struct AppState {
     pub designated_callsigns: Arc<Vec<String>>,
     pub should_quit: bool,
     pub decode_strings: Vec<String>,
+    pub status_string: String,  
 }
 
 impl Default for AppState {
@@ -16,6 +17,7 @@ impl Default for AppState {
             designated_callsigns: Arc::new(Vec::new()),
             should_quit: false,
             decode_strings: Vec::new(),
+            status_string: String::new(),
         }
     }
 }

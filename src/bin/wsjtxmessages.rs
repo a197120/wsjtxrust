@@ -68,7 +68,12 @@ impl std::fmt::Display for Status{
         , self.id, self.dial_frequency, self.mode, self.dx_call, self.report, self.tx_mode, self.tx_enabled, self.transmitting, self.decoding, self.rx_df, self.tx_df, self.de_call, self.de_grid, self.dx_grid, self.tx_watchdog, self.sub_mode, self.fast_mode, self.special_operation_mode, self.frequency_tolerance, self.tr_period, self.configuration_name, self.tx_message)
     }
 }
-
+impl Status {
+    pub fn print_status(&self, app_state: &mut AppState) {
+        app_state.status_string = format!("ID: {}, Freq: {}, Mode: {}, TX Enabled {}, TX {}, Decoding {}, TX WatchDog {}", self.id,
+        self.dial_frequency, self.mode, self.tx_enabled, self.transmitting, self.decoding, self.tx_watchdog);
+    }
+}
 // #[derive(Serialize, Deserialize, Debug, Display)]
 #[derive(Debug)]
 pub struct Decode {

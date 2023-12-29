@@ -527,7 +527,7 @@ pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
     // println!("Message Type: {:x}", messagetype); 
     match messagetype {
         0 => { decode_heartbeat(payload, DEBUG); }
-        1 => { decode_status(payload, DEBUG); }
+        1 => { decode_status(payload, DEBUG).print_status(app_state); }
         2 => { decode_decode(payload, DEBUG).print_message(app_state) ; }
         // 2 => { decode_decode(payload, DEBUG) ; }
         3 => { decode_clear(payload, true); }
