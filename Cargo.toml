@@ -19,4 +19,14 @@ ratatui = "0.25.0"
 crossterm = "0.27.0"
 anyhow = "1.0.77"
 color-eyre = "0.6.2"
+simplelog = "0.12.1"
+log = "0.4.20"
+
+# [profile.release]
+# opt-level = 'z'     # Optimize for size
+# lto = true          # Enable link-time optimization
+# codegen-units = 1   # Reduce number of codegen units to increase optimizations
+# panic = 'abort'     # Abort on panic
+# strip = true        # Strip symbols from binary*
+
 

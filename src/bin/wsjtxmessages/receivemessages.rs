@@ -41,6 +41,7 @@ fn get_u8_from_payload(payload: &[u8]) -> (u8, &[u8]) {
     }
 }
 
+
 fn get_i32_from_payload(payload: &[u8]) -> (i32, &[u8]) {
     let (bytes, rest) = payload.split_at(4);
     let value = BigEndian::read_i32(bytes);
@@ -60,7 +61,28 @@ fn get_f64_from_payload(payload: &[u8]) -> (f64, &[u8]) {
     let value = BigEndian::read_f64(bytes);
     (value, rest)
 }
+fn get_qdatetime_from_payload(payload: &[u8]) -> (NaiveDate, NaiveTime, u8, Option<i32>, &[u8]) {
+    let (bytes, rest) = payload.split_at(8);
+    let julian_day_number = i64::from_be_bytes(bytes.try_into().unwrap());
+    let date = NaiveDate::from_num_days_from_ce((julian_day_number - 1_721_425) as i32);
 
+    let (bytes, rest) = rest.split_at(4);
+    let ms_since_midnight = u32::from_be_bytes(bytes.try_into().unwrap());
+    let time = get_time_from_milliseconds_since_midnight(ms_since_midnight);
+
+    let (bytes, rest) = rest.split_at(1);
+    let timespec = u8::from_be_bytes(bytes.try_into().unwrap());
+
+    let (offset, rest) = if timespec == 2 {
+        let (bytes, rest) = rest.split_at(4);
+        let offset = i32::from_be_bytes(bytes.try_into().unwrap());
+        (Some(offset), rest)
+    } else {
+        (None, rest)
+    };
+
+    (date, time, timespec, offset, rest)
+}
 pub fn decode_heartbeat(payload: &[u8], debug: bool) -> Heartbeat{
     if debug {
         println!("Heartbeat message");
@@ -229,35 +251,58 @@ pub fn decode_reply(payload: &[u8], debug: bool) -> Reply{
     reply
 }
 
-pub fn decode_logdata(payload: &[u8], debug: bool) -> LogData{
+pub fn decode_logdata(payload: &[u8], debug: bool, app_state: &mut AppState) -> LogData {
     if debug {
-        println!("LogData message");
+        info!("LogData message");
     }
+    info!("Decoding logdata, payload length: {}", payload.len());
     let (message_type, rest) = get_u32_from_payload(payload);
+    info!("message_type: {}", message_type);
     let (id, rest) = get_string_from_payload(rest);
-    let (date_time_off, rest) = get_u64_from_payload(rest);
-    let date_time_off = Utc.timestamp(date_time_off as i64, 0);
+    info!("id: {}", id);
+    let (dateoff, timeoff, timespecoff, offsetoff, rest) = get_qdatetime_from_payload(rest);    
+    let date_time_off = dateoff.and_time(timeoff);
+    info!("date_time_off: {}, timespec {:?} offset {:?}", date_time_off, timespecoff, offsetoff);
     let (dx_call, rest) = get_string_from_payload(rest);
+    info!("dx_call: {}", dx_call);
     let (dx_grid, rest) = get_string_from_payload(rest);
+    info!("dx_grid: {}", dx_grid);
     let (tx_frequency_hz, rest) = get_u64_from_payload(rest);
+    info!("tx_frequency_hz: {}", tx_frequency_hz);
     let (mode, rest) = get_string_from_payload(rest);
+    info!("mode: {}", mode);
     let (report_sent, rest) = get_string_from_payload(rest);
+    info!("report_sent: {}", report_sent);
     let (report_received, rest) = get_string_from_payload(rest);
+    info!("report_received: {}", report_received);
     let (tx_power, rest) = get_string_from_payload(rest);
+    info!("tx_power: {}", tx_power);
     let (comments, rest) = get_string_from_payload(rest);
+    info!("comments: {}", comments);
     let (name, rest) = get_string_from_payload(rest);
-    let (date_time_on, rest) = get_u64_from_payload(rest);
-    let date_time_on = Utc.timestamp(date_time_on as i64, 0);
+    info!("name: {}", name);
+    let (dateon, timeon, timespecon, offseton, rest) = get_qdatetime_from_payload(rest);    
+    info!("dateon: {}, timeon: {}, timespecon: {:?}, offseton: {:?}", dateon, timeon, timespecon, offseton);
+    let date_time_on = dateon.and_time(timeon);
+    info!("date_time_on: {}, timespec {:?} offset {:?}", date_time_on, timespecon, offseton);
     let (operator_call, rest) = get_string_from_payload(rest);
+    info!("operator_call: {}", operator_call);
     let (my_call, rest) = get_string_from_payload(rest);
+    info!("my_call: {}", my_call);
     let (my_grid, rest) = get_string_from_payload(rest);
+    info!("my_grid: {}", my_grid);
     let (exchange_sent, rest) = get_string_from_payload(rest);
+    info!("exchange_sent: {}", exchange_sent);
     let (exchange_received, rest) = get_string_from_payload(rest);
+    info!("exchange_received: {}", exchange_received);
     let (adif_propagation_mode, _rest) = get_string_from_payload(rest);
+    info!("adif_propagation_mode: {}", adif_propagation_mode);
     let logdata = LogData {
         message_type,
         id,
         date_time_off,
+        timespecoff,
+        offsetoff,
         dx_call,
         dx_grid,
         tx_frequency_hz,
@@ -268,6 +313,8 @@ pub fn decode_logdata(payload: &[u8], debug: bool) -> LogData{
         comments,
         name,
         date_time_on,
+        timespecon,
+        offseton,
         operator_call,
         my_call,
         my_grid,
@@ -532,7 +579,7 @@ pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
         // 2 => { decode_decode(payload, DEBUG) ; }
         3 => { decode_clear(payload, true); }
         4 => { decode_reply(payload, DEBUG); }
-        5 => { decode_logdata(payload, DEBUG); }
+        5 => { decode_logdata(payload, true, app_state); }
         6 => { decode_close(payload, true); }
         7 => { decode_replay(payload, DEBUG); }
         8 => { decode_halt_tx(payload, DEBUG); }

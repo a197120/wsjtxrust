@@ -6,6 +6,9 @@ pub mod tui;
 pub mod update;
 use std::net::{UdpSocket, SocketAddr};
 use std::io;
+use simplelog::*;
+use log::{info, LevelFilter};
+use std::fs::File;
 // use colored::*;
 // use std::str;
 pub use wsjtxmessages::*;
@@ -23,8 +26,10 @@ const DEBUG: bool = false;
 
 
 fn main() -> Result<()> {
-
+    let log_file = File::create("wsjtxmessages.log").unwrap();
     let mut appstate = AppState::new().expect("Could not read callsigns");
+    WriteLogger::init(LevelFilter::Info, Config::default(), log_file).unwrap();
+    info!("Starting WSJTX Message Server");
     println!("Designated Callsigns: {:?}", appstate.designated_callsigns);
     //uncomment below line for windows 
     //set_virtual_terminal(true).unwrap();

@@ -1,7 +1,7 @@
 //anything using qcolor or qtypes is tested yet, proceed with caution if using these objects.
 pub mod receivemessages;
 pub mod sendmessages;
-use chrono::{DateTime, TimeZone, NaiveTime, Timelike};
+use chrono::{DateTime, TimeZone, NaiveDate, NaiveTime, NaiveDateTime, Timelike};
 use chrono::offset::Utc;
 // use receivemessages::*;
 // use sendmessages::*;
@@ -221,7 +221,9 @@ impl std::fmt::Display for Reply{
 pub struct LogData {
     message_type: u32,
     id: String,
-    date_time_off: DateTime<Utc>,
+    date_time_off: NaiveDateTime,
+    timespecoff: u8,
+    offsetoff: Option<i32>,
     dx_call: String,
     dx_grid: String,
     tx_frequency_hz: u64,
@@ -231,7 +233,9 @@ pub struct LogData {
     tx_power: String,
     comments: String,
     name: String,
-    date_time_on: DateTime<Utc>,
+    date_time_on: NaiveDateTime,
+    timespecon: u8,
+    offseton: Option<i32>,
     operator_call: String,
     my_call: String,
     my_grid: String,
