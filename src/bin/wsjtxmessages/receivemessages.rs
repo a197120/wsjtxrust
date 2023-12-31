@@ -590,6 +590,7 @@ pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
         13 => { decode_highlight_callsign_in(payload, DEBUG); }
         14 => { decode_switch_configuration(payload, DEBUG); }
         15 => { decode_configure(payload, DEBUG); }
-        _ => eprintln!("Unknown Message Type"),
+        // _ => eprintln!("Unknown Message Type"),
+        _ => {}, // this was modified to ignore unknown message types presented in modified versions of WSJTX
     };
 }
