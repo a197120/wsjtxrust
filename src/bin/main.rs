@@ -30,10 +30,10 @@ fn main() -> Result<()> {
     let mut appstate = AppState::new().expect("Could not read callsigns");
     WriteLogger::init(LevelFilter::Info, Config::default(), log_file).unwrap();
     info!("Starting WSJTX Message Server");
-    println!("Designated Callsigns: {:?}", appstate.designated_callsigns);
+    info!("Designated Callsigns: {:?}", appstate.designated_callsigns);
     //uncomment below line for windows 
     //set_virtual_terminal(true).unwrap();
-    println!("{}","WSJTX Message Server");
+    info!("{}","WSJTX Message Server");
 
     // Initialize the terminal user interface.
     let backend = CrosstermBackend::new(std::io::stderr());
@@ -59,7 +59,7 @@ fn main() -> Result<()> {
         match socket.recv_from(&mut buffer) {
             Ok((size, src)) => {
                 if DEBUG {
-                    println!("Received {} bytes from: {}", size, src);
+                    info!("Received {} bytes from: {}", size, src);
                 }
 
                 handle_incoming_data(&buffer[..size], &mut appstate);
@@ -93,7 +93,7 @@ fn main() -> Result<()> {
             Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
                 // there's no packet, continue the loop
             },
-            Err(e) => eprintln!("Couldn't receive a datagram: {}", e),
+            Err(e) => info!("Couldn't receive a datagram: {}", e),
         }
 
     }

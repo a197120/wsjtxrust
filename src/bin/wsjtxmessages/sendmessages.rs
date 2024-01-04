@@ -275,8 +275,8 @@ pub fn encode_configure(configure: &Configure) -> Vec<u8> {
 }
 
 pub fn send_encoded_message(socket: &UdpSocket, message: Vec<u8>, address: SocketAddr) -> io::Result<()> {
-    println!("Sending message: {:?}", message);
-    println!("To address: {:?}", address);
+    info!("Sending message: {:?}", message);
+    info!("To address: {:?}", address);
     socket.send_to(&message, address)?;
     Ok(())
 }

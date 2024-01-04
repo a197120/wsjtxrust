@@ -85,7 +85,7 @@ fn get_qdatetime_from_payload(payload: &[u8]) -> (NaiveDate, NaiveTime, u8, Opti
 }
 pub fn decode_heartbeat(payload: &[u8], debug: bool) -> Heartbeat{
     if debug {
-        println!("Heartbeat message");
+        info!("Heartbeat message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -100,14 +100,14 @@ pub fn decode_heartbeat(payload: &[u8], debug: bool) -> Heartbeat{
         revision: revision,
         };
     if debug {
-        println!("Heartbeat: {}", heartbeat)
+        info!("Heartbeat: {}", heartbeat)
     }
     heartbeat
 }
 
 pub fn decode_status(payload: &[u8], debug: bool) -> Status {
     if debug {
-        println!("Status message");
+        info!("Status message");
     }
     // println!("Payload: {:?}", payload);
     let (message_type, rest) = get_u32_from_payload(payload);
@@ -160,14 +160,14 @@ pub fn decode_status(payload: &[u8], debug: bool) -> Status {
         tx_message,
         };
     if debug {
-        println!("Status: {}", status);
+        info!("Status: {}", status);
     }
     status
 }
 
 pub fn decode_decode(payload: &[u8], debug: bool) -> Decode {
     if debug {
-        println!("Decode message");
+        info!("Decode message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -195,14 +195,14 @@ pub fn decode_decode(payload: &[u8], debug: bool) -> Decode {
         off_air,
     };
     if debug {
-        println!("Decode: {}", decode);
+        info!("Decode: {}", decode);
     }
     decode
 }
 
 pub fn decode_clear(payload: &[u8], debug: bool) -> Clear{
     if debug {
-        println!("Clear message");
+        info!("Clear message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -213,14 +213,14 @@ pub fn decode_clear(payload: &[u8], debug: bool) -> Clear{
         window,
     };
     if debug {
-        println!("Clear: {}", clear);
+        info!("Clear: {}", clear);
     }
     clear
 }
 
 pub fn decode_reply(payload: &[u8], debug: bool) -> Reply{
     if debug {
-        println!("Reply message");
+        info!("Reply message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -246,7 +246,7 @@ pub fn decode_reply(payload: &[u8], debug: bool) -> Reply{
         modifiers,
     };
     if debug {
-        println!("Reply: {}", reply);
+        info!("Reply: {}", reply);
     }
     reply
 }
@@ -323,14 +323,14 @@ pub fn decode_logdata(payload: &[u8], debug: bool, app_state: &mut AppState) -> 
         adif_propagation_mode,
     };
     if debug {
-        println!("LogData: {}", logdata);
+        info!("LogData: {}", logdata);
     }
     logdata
 }
 
 pub fn decode_close(payload: &[u8], debug: bool) -> Close{
     if debug {
-        println!("Close message");
+        info!("Close message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, _rest) = get_string_from_payload(rest);
@@ -339,14 +339,14 @@ pub fn decode_close(payload: &[u8], debug: bool) -> Close{
         id,
     };
     if debug {
-        println!("Close: {}", close);
+        info!("Close: {}", close);
     }
     close
 }
 
 pub fn decode_replay(payload: &[u8], debug: bool) -> Replay{
     if debug {
-        println!("Replay message");
+        info!("Replay message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, _rest) = get_string_from_payload(rest);
@@ -355,14 +355,14 @@ pub fn decode_replay(payload: &[u8], debug: bool) -> Replay{
         id,
     };
     if debug {
-        println!("Replay: {}", replay);
+        info!("Replay: {}", replay);
     }
     replay
 }
 
 pub fn decode_halt_tx(payload: &[u8], debug: bool) -> HaltTx{
     if debug {
-        println!("Halt Tx message");
+        info!("Halt Tx message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -373,13 +373,13 @@ pub fn decode_halt_tx(payload: &[u8], debug: bool) -> HaltTx{
         auto_tx_only,
     };
     if debug {
-        println!("HaltTx: {}", halt_tx);
+        info!("HaltTx: {}", halt_tx);
     }
     halt_tx
 }
 pub fn decode_free_text(payload: &[u8], debug: bool) -> FreeText{
     if debug {
-        println!("Free Text message");
+        info!("Free Text message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -392,14 +392,14 @@ pub fn decode_free_text(payload: &[u8], debug: bool) -> FreeText{
         send,
     };
     if debug {
-        println!("FreeText: {}", freetext);
+        info!("FreeText: {}", freetext);
     }
     freetext
 }
 
 pub fn decode_wspr_decode(payload: &[u8], debug: bool) -> WSPRDecode{
     if debug {
-        println!("WSPR Decode message");
+        info!("WSPR Decode message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -429,14 +429,14 @@ pub fn decode_wspr_decode(payload: &[u8], debug: bool) -> WSPRDecode{
         off_air,
     };
     if debug {
-        println!("WSPRDecode: {}", wsprdecode);
+        info!("WSPRDecode: {}", wsprdecode);
     }
     wsprdecode
 }
 
 pub fn decode_location(payload: &[u8], debug: bool) -> Location { 
     if debug {
-        println!("Location message");
+        info!("Location message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -447,14 +447,14 @@ pub fn decode_location(payload: &[u8], debug: bool) -> Location {
         location,
     };
     if debug {
-        println!("Location: {}", location);
+        info!("Location: {}", location);
     }
     location
 }
 
 pub fn decode_logged_adif(payload: &[u8], debug: bool) -> LoggedADIF{
     if debug {
-        println!("Logged ADIF message");
+        info!("Logged ADIF message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -465,14 +465,14 @@ pub fn decode_logged_adif(payload: &[u8], debug: bool) -> LoggedADIF{
         adif,
     };
     if debug {
-        println!("LoggedADIF: {}", loggedadif);
+        info!("LoggedADIF: {}", loggedadif);
     }
     loggedadif
 }
 
 pub fn decode_highlight_callsign_in(payload: &[u8], debug: bool) -> HighlightCallsignIn{
     if debug {
-        println!("Highlight Callsign In message");
+        info!("Highlight Callsign In message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -489,14 +489,14 @@ pub fn decode_highlight_callsign_in(payload: &[u8], debug: bool) -> HighlightCal
         highlight_last,
     };
     if debug {
-        println!("HighlightCallsignIn: {}", highlightcallsignin);
+        info!("HighlightCallsignIn: {}", highlightcallsignin);
     }
     highlightcallsignin
 }
 
 pub fn decode_switch_configuration(payload: &[u8], debug: bool) -> SwitchConfiguration{
     if debug {
-        println!("Switch Configuration message");
+        info!("Switch Configuration message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -507,14 +507,14 @@ pub fn decode_switch_configuration(payload: &[u8], debug: bool) -> SwitchConfigu
         configuration_name,
     };
     if debug {
-        println!("SwitchConfiguration: {}", switchconfiguration);
+        info!("SwitchConfiguration: {}", switchconfiguration);
     }
     switchconfiguration
 }
 
 pub fn decode_configure(payload: &[u8], debug: bool) -> Configure{
     if debug {
-        println!("Configure message");
+        info!("Configure message");
     }
     let (message_type, rest) = get_u32_from_payload(payload);
     let (id, rest) = get_string_from_payload(rest);
@@ -541,14 +541,14 @@ pub fn decode_configure(payload: &[u8], debug: bool) -> Configure{
         generate_messages,
     };
     if debug {
-        println!("Configure: {}", configure);
+        info!("Configure: {}", configure);
     }
     configure
 }
 
 pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
     if data.len() < 8 {
-        eprintln!("Data too short to be a valid message");
+        info!("Data too short to be a valid message");
         return;
     }
     //split header from payload
@@ -563,15 +563,15 @@ pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
         payload: payload.to_vec(),
     };
     if DEBUG {
-        println!("Message: {:?}", message);
+        info!("Message: {:?}", message);
     }
-    // println!("Magic Number: {:#x}", magic_number);
-    // println!("Schema Number: {:x}", schema_number);
-    // println!("Received message: {:?}", data);
-    // println!("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    // info!("Magic Number: {:#x}", magic_number);
+    // info!("Schema Number: {:x}", schema_number);
+    // info!("Received message: {:?}", data);
+    // info!("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     //get messagetype from the payload
     let messagetype = u32::from_be_bytes([payload[0], payload[1], payload[2], payload[3]]);
-    // println!("Message Type: {:x}", messagetype); 
+    // info!("Message Type: {:x}", messagetype); 
     match messagetype {
         0 => { decode_heartbeat(payload, DEBUG); }
         1 => { decode_status(payload, DEBUG).print_status(app_state); }
@@ -590,7 +590,7 @@ pub fn handle_incoming_data(data: &[u8], app_state: &mut AppState) {
         13 => { decode_highlight_callsign_in(payload, DEBUG); }
         14 => { decode_switch_configuration(payload, DEBUG); }
         15 => { decode_configure(payload, DEBUG); }
-        // _ => eprintln!("Unknown Message Type"),
-        _ => {}, // this was modified to ignore unknown message types presented in modified versions of WSJTX
+        _ => info!("Unknown Message Type"),
+        // _ => {}, // this was modified to ignore unknown message types presented in modified versions of WSJTX
     };
 }

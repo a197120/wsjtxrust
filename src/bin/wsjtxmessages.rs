@@ -132,21 +132,35 @@ impl Decode {
 
     fn alert_designated_callsign(&self, parts: Vec<&str>, app_state: &mut AppState) -> Vec<String> {
         let mut highlighted_parts = Vec::new();
+        let mut match_found = false;
+    
         for part in parts {
             if app_state.designated_callsigns.contains(&part.to_string()) {
                 print!("\x07"); // bell character
                 highlighted_parts.push(part.to_string()); // highlight the callsign
+                match_found = true;
             } else {
                 highlighted_parts.push(part.to_string());
             }
         }
-        highlighted_parts
+    
+        if match_found {
+            highlighted_parts
+        } else {
+            Vec::new()
+        }
     }
+
     fn print_non_cq_message(&self, parts: Vec<&str>, app_state: &mut AppState) {  
         let highlighted_parts = self.alert_designated_callsign(parts, app_state);
         let message = highlighted_parts.join(" ");
-        app_state.decode_strings.push(format!("{}: SNR: {} {}", self.time, self.format_snr(), message));
-        app_state.list_state.select(app_state.decode_strings.len() - 1);
+        // info!("{}: SNR: {} {}", self.time, self.format_snr(), message);SNR
+        
+        if !highlighted_parts.is_empty() {
+            let message = highlighted_parts.join(" ");
+            app_state.decode_strings.push(format!("{}: SNR: {} {}", self.time, self.format_snr(), message));
+            app_state.list_state.select(app_state.decode_strings.len() - 1);
+        }
 
     }
 
@@ -164,22 +178,16 @@ impl Decode {
         }
     }
     fn print_cq_message(&self, parts: Vec<&str>, country: CountryCode, search_result: &SearchResult, typical: bool, app_state: &mut AppState) {
-        let highlighted_parts = self.alert_designated_callsign(parts, app_state);
-
         if typical {
             app_state.decode_strings.push(format!("{}: SNR: {} CQ de {} {}, Country: {}, State: {}, City: {}",
-            self.time, self.format_snr(), highlighted_parts[1], highlighted_parts[2], country.name, 
+            self.time, self.format_snr(), parts[1], parts[2], country.name, 
             search_result.record.admin1, search_result.record.name));
             app_state.list_state.select(app_state.decode_strings.len() - 1);
-
-            app_state.should_redraw = true;
         } else {
             app_state.decode_strings.push(format!("{}: SNR: {} CQ {} {} {}, Country: {}, State: {}, City: {}",
-            self.time, self.format_snr(), highlighted_parts[1], highlighted_parts[2], highlighted_parts[3], country.name, 
+            self.time, self.format_snr(), parts[1], parts[2], parts[3], country.name, 
             search_result.record.admin1, search_result.record.name));
             app_state.list_state.select(app_state.decode_strings.len() - 1);
-
-            app_state.should_redraw = true;
         }
     }
 }
